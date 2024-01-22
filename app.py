@@ -1,71 +1,80 @@
-
-
 from flask import Flask, render_template, request, flash, redirect
-import freecurrencyapi
-klucz = "C:/users/sebas/klucz.txt"  # Plik z kluczem API
-client_status_dict= {}
+from url import get_exchange
+from kombinacje import kombinacje
 
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "psnt"  # Klucz prywatny aplikacji dla celów m.in. bezpieczeństwa
 
+# Pobranie danych z API url = "https://api.nbp.pl/api/exchangerates/tables/A"
+tablea_list, tablea_dict = get_exchange()
 
-with open(klucz) as zawartosc_pliku:
-    apikey = zawartosc_pliku.read().strip()  # Usunięcie ewentualnych białych znaków na początku i końcu
-if apikey:
-    client = freecurrencyapi.Client(apikey)
-else:
-    wczytywanie = False
-    flash(f"Błąd: Plik \"{klucz}\" jest pusty lub nie zawiera prawidłowego klucza.")
+ilosc_walut = len(tablea_list) - 6
+
+# Pobranie wszystkich kombinacji trójek walut: np. ('AUD', 'BGN', 'BRL') i ich iloczynów
+iloczyny_dict = kombinacje(tablea_dict)
+
+above_one = 0
+equal_to_one = 0
+less_than_one = 0
+posortowany_słownik = dict(sorted(iloczyny_dict.items(), key=lambda x: x[1], reverse=True))
+for wartosc in posortowany_słownik.values():
+    if wartosc > 1:
+       above_one += 1
+    elif wartosc == 1:
+        equal_to_one += 1
+    elif wartosc < 1:
+        less_than_one += 1
+
+above_one = f"{above_one},         {above_one*100/len(posortowany_słownik):.1F} %"
+equal_to_one = f"{equal_to_one},         {equal_to_one*100/len(posortowany_słownik):.1F} %"
+less_than_one = f"{less_than_one},         {less_than_one*100/len(posortowany_słownik):.1F} %"
+
+slownik_strona = {}
+# Dodaj pierwsze 10 elementów do nowego słownika
+for klucz, wartosc in posortowany_słownik.items():
+    slownik_strona[klucz] = wartosc
+    if len(slownik_strona) == 10:
+        break
 
 
+pierwsze_10_wieksze_1 = {}
+# Iteruj po kluczach i wartościach i dodaj do listy pierwsze 10 wartości równych 1
+for klucz, wartosc in iloczyny_dict.items():
+    if wartosc > 1 and len(pierwsze_10_wieksze_1) < 10:
+        pierwsze_10_wieksze_1[klucz]=wartosc
+
+pierwsze_10_rowne_1 = {}
+# Iteruj po kluczach i wartościach i dodaj do listy pierwsze 10 wartości równych 1
+for klucz, wartosc in iloczyny_dict.items():
+    if wartosc == 1 and len(pierwsze_10_rowne_1) < 10:
+        pierwsze_10_rowne_1[klucz]=wartosc
+
+pierwsze_10_mniejsze_1 = {}
+# Iteruj po kluczach i wartościach i dodaj do listy pierwsze 10 wartości równych 1
+for klucz, wartosc in iloczyny_dict.items():
+    if wartosc < 1 and len(pierwsze_10_mniejsze_1) < 10:
+        pierwsze_10_mniejsze_1[klucz]=wartosc
 
 @app.route('/')
 def index():
-    kursy = {'AUD': 1.5263402006, 'BGN': 1.7914602142, 'BRL': 4.9349407964, 'CAD': 1.3499002044, 'CHF': 0.8642801516, 'CNY': 7.1952110979, 'CZK': 22.7080727839, 'DKK': 6.8496408238, 'EUR': 0.918460133, 'GBP': 0.7888101481, 'HKD': 7.81916121, 'HRK': 7.0190712163, 'HUF': 348.7454373584, 'IDR': 15615.630404131, 'ILS': 3.7924906612, 'INR': 83.1541531204, 'ISK': 137.5734757264, 'JPY': 148.1056956932, 'KRW': 1342.6442011241, 'MXN': 17.1948332549, 'MYR': 4.7150405437, 'NOK': 10.4991614381, 'NZD': 1.6357301993, 'PHP': 55.8925090032, 'PLN': 4.0391104838, 'RON': 4.5695405654, 'RUB': 88.9826805086, 'SEK': 10.4385014086, 'SGD': 1.3440801752, 'THB': 35.5868466639, 'TRY': 30.1273151842, 'USD': 1, 'ZAR': 19.0595827862}
-    return render_template('index.html', kursy=kursy)
+    return render_template('index.html', dane=tablea_list)
 
+@app.route('/kombinacje')
+def kombinacje():
+    return render_template('kombinacje.html', dane = slownik_strona,
+                           ilosc_walut=ilosc_walut,
+                           pierwsze_10_wieksze_1=pierwsze_10_wieksze_1,
+                           pierwsze_10_rowne_1=pierwsze_10_rowne_1,
+                           pierwsze_10_mniejsze_1=pierwsze_10_mniejsze_1,
+                           above_one = above_one,
+                           equal_to_one = equal_to_one ,
+                           less_than_one = less_than_one)
 
 @app.route('/status')
 def status():
-    status_klienta = client.status()
-    print(status_klienta)
-    account_id =  status_klienta['account_id']
-    quotas = list(status_klienta.keys())[1]
-    client_status_dict = {
-        'account_id' : account_id,
-        quotas : '',
-        'month total: ' :  status_klienta['quotas']['month']['total'],
-        'month used: ' : status_klienta['quotas']['month']['used'],
-        'month remaining: ' : status_klienta['quotas']['month']['remaining'],
-    }
-    return render_template('status.html', status=client_status_dict)
+    return render_template('status.html')
 
 @app.route('/about')
 def about():
     return render_template('about.html')
-
-def separator():
-    print("-" * 60)
-
-
-# separator()
-#
-# kursy = client.latest()
-# print(kursy)
-# separator()
-#
-# result = client.historical('2022-02-02')
-# print(result)
-# separator()
-#
-# result = client.currencies(currencies=['EUR', 'CAD'])
-# print(result)
-# separator()
-#
-# for value in kursy.values():
-#     print(value)
-#
-# separator()
-# eur_rate = kursy['data']['EUR']
-# print(eur_rate)

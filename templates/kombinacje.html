@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %} Kombinacje {% endblock %}
+
+{% block content %}
+<div class="container" mx-auto>
+<p>Ilość walut: {{ ilosc_walut }}</p>
+<div class="row">
+    <div class="col-3">kombinacje większe od 0: </div>
+    <div class="col-3">{{ above_one }}</div>
+</div>
+<div class="row">
+    <div class="col-3">kombinacje równe 0: </div>
+    <div class="col-3">{{ equal_to_one }}</div>
+</div>
+<div class="row">
+    <div class="col-3">kombinacje mniejsze od 0: </div>
+    <div class="col-3">{{ less_than_one }}</div>
+</div><br>
+
+  <div class="row">
+    <div class="col-2"></div>  <!-- Lewy margines 1/12 szerokości -->
+    <div class="col-1">#</div>  <!-- Pierwsza kolumna 1/12 szerokości -->
+    <div class="col-2">Kombinacja</div>  <!-- Druga kolumna 1/12 szerokości -->
+    <div class="col-2">Wynik</div>  <!-- Trzecia kolumna 5/12 szerokości -->
+    <div class="col-2"></div>  <!-- Prawy margines 1/12 szerokości -->
+  </div><br>
+    <p>Przykładowe kombinacje z iloczynem większym od 1:</p>
+          {%  for kombinacja, wynik in pierwsze_10_wieksze_1.items() %}
+  <div class="row" mx-auto>
+    <div class="col-2"></div>
+    <div class="col-1">{{ loop.index }}</div>
+    <div class="col-2">{{ kombinacja }}</div>
+    <div class="col-2">{{ wynik }}</div>
+    <div class="col-2"></div>
+  </div>
+        {% endfor %}
+<br>
+  <div>
+     <p>Przykładowe kombinacje z iloczynem równym 1:</p>
+          {%  for kombinacja, wynik in pierwsze_10_rowne_1.items() %}
+  <div class="row" mx-auto>
+    <div class="col-2"></div>
+    <div class="col-1">{{ loop.index }}</div>
+    <div class="col-2">{{ kombinacja }}</div>
+    <div class="col-2">{{ wynik }}</div>
+    <div class="col-2"></div>
+  </div>
+        {% endfor %}
+</div><br>
+    <p>Przykładowe kombinacje z iloczynem mniejszym od 1:</p>
+          {%  for kombinacja, wynik in pierwsze_10_mniejsze_1.items() %}
+  <div class="row" mx-auto>
+    <div class="col-2"></div>
+    <div class="col-1">{{ loop.index }}</div>
+    <div class="col-2">{{ kombinacja }}</div>
+    <div class="col-2">{{ wynik }}</div>
+    <div class="col-2"></div>
+  </div>
+        {% endfor %}
+</div>
+<br>
+{% endblock %}

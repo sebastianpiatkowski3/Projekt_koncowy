@@ -3,12 +3,20 @@
 {% block title %} Currencies {% endblock %}
 
 {% block content %}
-    <table style="width:80%" align="center">
-        {% for key, value in kursy.items() %}
-        <tr>
-        <td style="text-align:left;">{{ key }}</td>
-        <td style="text-align:left;">{{value }}</td>
-        </tr>
+<div class="container" mx-auto>
+  <div class="row">
+    <div class="col-2"></div>  <!-- Lewy margines 1/12 szerokości -->
+    <div class="col-1">#</div>  <!-- Pierwsza kolumna 1/12 szerokości -->
+    <div class="col-1">kurs</div>  <!-- Trzecia kolumna 5/12 szerokości -->
+    <div class="col-2"></div>  <!-- Prawy margines 1/12 szerokości -->
+  </div>
+        {% for element in dane %}
+  <div class="row" mx-auto>
+    <div class="col-2"></div>
+    <div class="col-1">{{ loop.index }}</div>
+    <div class="col-5">{{ element }}</div>
+    <div class="col-2"></div>
+  </div>
         {% endfor %}
-</table>
+</div>
 {% endblock %}
