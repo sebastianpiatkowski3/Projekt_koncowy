@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %} About {% endblock %}
+
+{% block content %}
+
+<p>Aplikacja jest zbudowana na frameworku Flask i korzysta z API FreeCurrencyAPI do pobierania najnowszych kursów walut. Aplikacja składa się z trzech głównych stron:</p>
+
+<ul>
+<li><strong>Strona główna</strong>: Wyświetla najnowsze kursy walut. Kursy są pobierane za pomocą metody `latest()` z klienta FreeCurrencyAPI.</li>
+
+<li><strong>Status</strong>: Wyświetla status klienta API, w tym identyfikator konta i informacje o wykorzystaniu kwoty. Status jest pobierany za pomocą metody `status()` z klienta FreeCurrencyAPI.</li>
+
+<li><strong>O nas</strong>: Wyświetla informacje o naszej aplikacji.</li>
+</ul>
+
+<p>Klucz API do FreeCurrencyAPI jest wczytywany za pomocą klasy Reader, która wczytuje klucz z pliku. Klucz ten jest następnie używany do inicjalizacji klienta API.</p>
+{% endblock %}}
