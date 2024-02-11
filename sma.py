@@ -25,7 +25,7 @@ from tqdm import tqdm
 import time
 import sys
 
-file = 'GER405japonskie.csv'
+file = ('GER402Renko5.csv')
 #file = 'GER40_2024_ohlc.csv'
 # file = 'NQ100_10pips_ohlc.csv'
 # file = 'GER40_20240124ohlc.csv'
@@ -34,6 +34,13 @@ file = 'GER405japonskie.csv'
 # Wczytaj dane z pliku csv
 # df = pd.read_csv(file)
 
+# Czy liczyć drugą średnią kroczącą?
+druga_srednia = False
+"""
+czy liczyć drugą średnią kroczącą:
+- jeżeli nie to liczę na podstawie 'c', 
+- jeżeli tak to na podstawie 'sma1' i 'sma2'
+"""
 
 # Lista z nazwami kolumn
 nazwy_kolumn = ['d', 'g', 'o', 'h', 'l', 'c', 'w']
@@ -55,19 +62,28 @@ def kombinuj_okresy_ma(df):
     ind = 0
     pips_per_day_df = pd.DataFrame(columns = ['sma1' , 'sma2' , 'ppd' , 'p_t' , 's_c'])
     # ppd = pips per day, p_t = profit_total, s_c = sum_crossings
-    periods_1 = [10]# , 20 , 30 , 45 , 70 , 100]
+    periods_1 = [10]#, 20 , 30 , 45 , 70 , 100]
     periods_2 = [50 , ]  # [50, 100, 150]
 
     for period1 in periods_1:
         for period2 in periods_2:
             if period1 != period2:
-                # Oblicz średnią ruchomą dla obu okresów
+
+                # Oblicz średnią ruchomą:
                 sma1 = df['c'].rolling(window = period1).mean()
                 df['sma1'] = sma1
-                sma2 = df['c']#.rolling(window = period2).mean()
+
+                if druga_srednia:
+                    sma2 = df['c'].rolling(window = period2).mean()
+                    df['sma2'] = sma2
+                else:
+                    sma2 = df['c']
+                    df['sma2'] = sma2
+
+
                 # Znajdź momenty przecięcia (kiedy sma1 przecina sma2)
-                crossings_upward = (sma1.shift(1) > sma2.shift(1)) & (sma1 < sma2)
-                crossings_downward = (sma1.shift(1) < sma2.shift(1)) & (sma1 > sma2)
+                crossings_upward = (sma1.shift(1) > sma2.shift(1)) & (sma1 < sma2) # cena spada:  sprzedaj
+                crossings_downward = (sma1.shift(1) < sma2.shift(1)) & (sma1 > sma2) # cena rosnie: kupuj
                 # Dodaj kolumnę 'crossings_upward' do ramki danych
                 df['crossings_upward'] = crossings_upward
                 df['crossings_downward'] = crossings_downward
@@ -77,15 +93,19 @@ def kombinuj_okresy_ma(df):
                 df['crossings'].fillna(False , inplace = True)
                 print(f'df: \n{df[16:25]}')
                 momenty = df[df['crossings'].copy()]
-                print(f'momenty: \n{momenty}')
-                diffs = momenty['c'].diff()
+                momenty_print = momenty[[ 'c' , 'crossings_upward', 'crossings_downward', 'crossings']]
+                print(f'momenty: \n{momenty_print}')
+                diffs = momenty['c'].diff()  # tu  liczę różnice, czyli profit
+                
                 print(f'diffs: \n{diffs[0:15]}')
                 # sum all absolute values of data from the second column of diffs
                 profit_total = diffs.abs().sum()
                 print(f'- Profit total: {profit_total:.1f}')
                 ppd = round(profit_total / time_difference.days , 1)
-                #  add sma1, sma2, ppd into pips_per_day_df
                 sum_crossings = len(diffs)
+
+                if not druga_srednia:
+                    period2 = 'close'
                 new_row = {'sma1': period1 , 'sma2': period2 , 'ppd': ppd}
                 pips_per_day_df.loc[ind] = [period1 ,
                                             period2 , ppd ,
