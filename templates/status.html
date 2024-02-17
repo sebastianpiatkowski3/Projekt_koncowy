@@ -3,5 +3,17 @@
 {% block title %} Status {% endblock %}
 
 {% block content %}
-<h3>Status konta:</h3>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+
+<h3>Wykres Mapa Ciepła</h3>
+
+{{ heatmap|safe }}
+
+
+    <div class="container mt-4">
+        {{ table|safe }}
+    </div>
+
 {% endblock %}

@@ -87,38 +87,131 @@
 # plt.show()
 # ____________________________
 
+# import pandas as pd
+#
+# # Przykładowe dane
+# data = {
+#     'c': [10, 15, 20, 25, 30, 35, 40]
+# }
+#
+# df = pd.DataFrame(data)
+# print(df)
+#
+# periods = [1, 2, 5, 10]
+#
+# for period1 in periods:
+#     for period2 in periods:
+#         if period1 != period2:
+#             # Oblicz średnią ruchomą dla obu okresów
+#             sma1 = df['c'].rolling(window=period1).mean()
+#             sma2 = df['c'].rolling(window=period2).mean()
+#
+#             # Znajdź momenty przecięcia (kiedy sma1 przecina sma2)
+#             crossings_upward = (sma1.shift(1) > sma2.shift(1)) & (sma1 < sma2)
+#             crossings_downward = (sma1.shift(1) < sma2.shift(1)) & (sma1 > sma2)
+#
+#             # Zapisz wyniki do dalszej analizy (np. w innym DataFrame lub pliku)
+#             # ...
+#
+#             print(f"Momenty przecięcia (z góry na dół) dla okresów {period1} i {period2}:")
+#             print(df[crossings_upward])
+#
+#             print(f"\nMomenty przecięcia (z dołu w górę) dla okresów {period1} i {period2}:")
+#             print(df[crossings_downward])
+#             print('-'*50)
+# # ____________________________
+
+# import matplotlib.pyplot as plt
+# import numpy as np
+#
+# # Przykładowe dane
+# x = np.random.rand(10)
+# y = np.random.rand(10)
+# values = np.random.rand(10)
+#
+# # Generowanie mapy cieplnej
+# plt.scatter(x, y, c=values, cmap='viridis', s=100)
+# plt.colorbar()
+#
+# # Konfiguracja osi
+# plt.xlabel('Oś X')
+# plt.ylabel('Oś Y')
+#
+# # Wyświetlenie mapy cieplnej
+# plt.show()
+# # ____________________________
+
+
+# import pandas as pd
+#
+# # Inicjalizacja list na wyniki
+# results = []
+#
+# periods_1 = [10, 20, 30]
+# periods_2 = [50, 100, 150]
+#
+# # Pętle obliczeniowe
+# for period1 in periods_1:
+#     for period2 in periods_2:
+#         # Tutaj dodaj swój kod obliczeń, np. ppd, profit_total, sum_crossings
+#
+#         profit_total = period1 + period2  # Twoje obliczenia
+#
+#
+#         # Dodanie wyników do listy
+#         results.append({'sma1': period1, 'sma2': period2, 't_p': profit_total, 's_c' : '123'})
+#
+# # Utworzenie DataFrame z wynikami
+# result_df = pd.DataFrame(results)
+#
+# # Wyświetlenie DataFrame
+# print(result_df)
+#
+# import seaborn as sns
+# import matplotlib.pyplot as plt
+#
+# # Tworzenie mapy ciepła za pomocą seaborn
+# plt.figure(figsize=(10, 8))
+# heatmap_data = result_df.pivot(index='sma1', columns='sma2', values='t_p')
+#
+# sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', linewidths=.5)
+# plt.title('Mapa ciepła dla danych')
+# plt.show()
+
+
+# import pandas as pd
+#
+# # Twój DataFrame
+# data = {'c': [16655.0, 16670.0, 16700.0, 16680.0, 16580.0, 16485.0, 16435.0, 16530.0, 16700.0, 16700.0, 16735.0, 16690.0, 16775.0],
+#         'crossings_upward': [False, True, False, True, False, True, False, True, False, True, False, True, False],
+#         'crossings_downward': [True, False, True, False, True, False, True, False, True, False, True, False, True],
+#         'crossings': [True, True, True, True, True, True, True, True, True, True, True, True, True]}
+#
+# df = pd.DataFrame(data)
+#
+# # Oblicz różnicę dla kolumny 'c'
+# df['c_diff'] = df['c'].diff()
+# print(df)
+#
+# # Zastosuj warunki i pomnóż przez -1
+# condition = (df['crossings_upward'].shift(-1) == True) & (df['c'].shift(-1) < df['c'])
+# df.loc[condition, 'c_diff'] *= -1
+#
+# # Wypełnij NaN zerami
+# df['c_diff'] = df['c_diff'].fillna(0)
+#
+# # Wyświetl DataFrame po zapełnieniu NaN zerami
+# print(df)
+
 import pandas as pd
+import plotly.express as px
 
-# Przykładowe dane
-data = {
-    'c': [10, 15, 20, 25, 30, 35, 40]
-}
+# Tworzenie DataFrame z danymi
+data = {'Styczeń': [5, 3], 'Luty': [7, 1]}
+df = pd.DataFrame(data, index=['Biały', 'Czerwony'])
 
-df = pd.DataFrame(data)
-print(df)
+# Tworzenie mapy ciepła
+fig = px.imshow(df, labels=dict(x="Miesiąc", y="Kolor", color="Wartość"), color_continuous_scale='blues')
 
-periods = [1, 2, 5, 10]
-
-for period1 in periods:
-    for period2 in periods:
-        if period1 != period2:
-            # Oblicz średnią ruchomą dla obu okresów
-            sma1 = df['c'].rolling(window=period1).mean()
-            sma2 = df['c'].rolling(window=period2).mean()
-
-            # Znajdź momenty przecięcia (kiedy sma1 przecina sma2)
-            crossings_upward = (sma1.shift(1) > sma2.shift(1)) & (sma1 < sma2)
-            crossings_downward = (sma1.shift(1) < sma2.shift(1)) & (sma1 > sma2)
-
-            # Zapisz wyniki do dalszej analizy (np. w innym DataFrame lub pliku)
-            # ...
-
-            print(f"Momenty przecięcia (z góry na dół) dla okresów {period1} i {period2}:")
-            print(df[crossings_upward])
-
-            print(f"\nMomenty przecięcia (z dołu w górę) dla okresów {period1} i {period2}:")
-            print(df[crossings_downward])
-            print('-'*50)
+fig.show()
 # ____________________________
-
-

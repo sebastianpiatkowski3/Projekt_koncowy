@@ -35,7 +35,7 @@ file = ('GER402Renko5.csv')
 # df = pd.read_csv(file)
 
 # Czy liczyć drugą średnią kroczącą?
-druga_srednia = False
+druga_srednia = True
 """
 czy liczyć drugą średnią kroczącą:
 - jeżeli nie to liczę na podstawie 'c', 
@@ -62,8 +62,8 @@ def kombinuj_okresy_ma(df):
     ind = 0
     pips_per_day_df = pd.DataFrame(columns = ['sma1' , 'sma2' , 'ppd' , 'p_t' , 's_c'])
     # ppd = pips per day, p_t = profit_total, s_c = sum_crossings
-    periods_1 = [10]#, 20 , 30 , 45 , 70 , 100]
-    periods_2 = [50 , ]  # [50, 100, 150]
+    periods_1 = [10, 20]#, 20 , 30 , 45 , 70 , 100]
+    periods_2 = [50, 100, 150]
 
     for period1 in periods_1:
         for period2 in periods_2:
