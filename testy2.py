@@ -112,7 +112,7 @@ def status():
         'account_id' : 'id',
         'quotas' : '',
     }
-    return render_template('status.html', status=client_status_dict)
+    return render_template('charts.html', status=client_status_dict)
 
 @app.route('/about')
 def about():

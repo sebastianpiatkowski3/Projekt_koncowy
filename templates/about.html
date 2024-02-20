@@ -3,16 +3,113 @@
 {% block title %} About {% endblock %}
 
 {% block content %}
+<br>
+    <section>
+        <p>
+            Welcome to the About page! This page provides information about the application and its features.
+        </p>
+    </section>
 
-<p>Aplikacja jest zbudowana na frameworku Flask i korzysta z API FreeCurrencyAPI do pobierania najnowszych kursów walut. Aplikacja składa się z trzech głównych stron:</p>
+    <section>
+        <h2>Application Overview</h2>
+        <p>
+            Celem tej aplikacji jest pomoc w znalezieniu optymalnej kombinacji okresów średnich ruchomych
+            w celu maksymalizacji zysków gry na giełdzie.<br>
+            <br>
+            The goal of this application is to assist in finding the optimal combination of moving average periods to maximize profits in stock trading.<br>
+            The application analyzes financial data using various combinations of moving averages.
+            It provides insights into different combinations of moving average periods, their daily and total profits,
+            and visualizations like heatmaps and line charts. Explore the Charts page for detailed visualizations and analyses.
+        </p>
+    </section>
 
-<ul>
-<li><strong>Strona główna</strong>: Wyświetla najnowsze kursy walut. Kursy są pobierane za pomocą metody `latest()` z klienta FreeCurrencyAPI.</li>
+    <section>
+        <h2>Moving Average Crossover Strategy</h2>
+        <p>
+            What is the Moving Average Crossover Strategy?<br>
+            <br>
+            The Moving Average Crossover (MA) strategy is a popular method of market analysis,
+            primarily used in stock trading. It is a simple yet effective way to identify trends in the financial market.
+            The main goal of this strategy is to capture entry or exit points based on the intersections of two different moving averages.<br>
+            <br>
+            How does the strategy work?<br>
+            <br>
 
-<li><strong>Status</strong>: Wyświetla status klienta API, w tym identyfikator konta i informacje o wykorzystaniu kwoty. Status jest pobierany za pomocą metody `status()` z klienta FreeCurrencyAPI.</li>
+Simple Moving Averages (SMA): The strategy uses two types of moving averages: fast (short-term) and slow (long-term).
+            The fast SMA calculates the average price over a short period, while the slow SMA analyzes a longer period.<br>
+            <br>
+Crossover Signals: The key points of this strategy are moments when the SMA lines intersect. There are two basic types of crossovers:
 
-<li><strong>O nas</strong>: Wyświetla informacje o naszej aplikacji.</li>
-</ul>
+Golden Cross: Occurs when the faster SMA crosses above the slower SMA, signaling a potential start of an upward trend.
+Death Cross: Takes place when the faster SMA crosses below the slower SMA, suggesting a possible start of a downward trend.<br>
+            <br>
+Advantages of the strategy:
 
-<p>Klucz API do FreeCurrencyAPI jest wczytywany za pomocą klasy Reader, która wczytuje klucz z pliku. Klucz ten jest następnie używany do inicjalizacji klienta API.</p>
+Simplicity: The strategy is easy to understand, even for beginners in the financial market.
+Trend Identification: Helps investors identify current trends in the market.<br>
+            <br>
+Risks and Tips:
+
+            Signal Delays: SMA may provide delayed signals, meaning investors may miss the beginning of a new trend.
+            Confirmation Needed: It is advisable to confirm SMA signals with additional analysis and indicators.<br>
+            <br>
+            In this application "Max Profit Seeker" our aim is to assist investors in optimally selecting SMA periods to maximize profits in the stock market.<br>
+            <br>
+            Implementation in "Max Profit Seeker":<br>
+            <br>
+            In our application "Max Profit Seeker," we perform the analysis based on data loaded from a CSV file.
+            The data in the file follows the OHLC (Open, High, Low, Close) format.
+            This comprehensive approach allows users to make informed decisions by considering various aspects of market movements.
+            <br>
+        </p>
+Strategia Przecinania Się Średnich Ruchomych<br>
+            <br>
+Czym jest strategia przecinania się średnich ruchomych?<br>
+            <br>
+Strategia przecinania się średnich ruchomych (SMA) to popularna metoda analizy rynku, wykorzystywana przede wszystkim w inwestycjach giełdowych. Jest to prosty, ale skuteczny sposób identyfikacji trendów na rynku finansowym. Głównym celem tej strategii jest wyłapanie punktów wejścia lub wyjścia z pozycji na podstawie przecięć dwóch różnych okresów średnich ruchomych.<br>
+            <br>
+Jak działa strategia?<br>
+            <br>
+Średnie Ruchome Proste (SMA): W strategii używa się dwóch rodzajów średnich ruchomych: szybkiej (krótkoterminowej) i wolnej (długoterminowej). Szybka SMA oblicza średnią cen dla krótkiego okresu, podczas gdy wolna SMA analizuje dłuższy okres.
+Sygnały przecięcia: Głównym punktem tej strategii są momenty, w których linie SMA krzyżują się. Istnieją dwa podstawowe rodzaje przecięć:
+Krzyżowanie wzrostowe (Golden Cross): Występuje, gdy szybsza SMA przecina wolniejszą SMA z dołu, sygnalizując potencjalny początek wzrostowego trendu.
+Krzyżowanie spadkowe (Death Cross): Ma miejsce, gdy szybsza SMA przecina wolniejszą SMA od góry, sugerując możliwy początek spadkowego trendu.<br>
+            <br>
+Zalety strategii:
+Prostota: Strategia jest łatwa do zrozumienia, nawet dla osób początkujących na rynku finansowym.
+Identyfikacja trendów: Pomaga inwestorom zidentyfikować obecne trendy na rynku.<br>
+            <br>
+Ryzyka i Wskazówki:
+Opóźnienia sygnałów: SMA może dawać opóźnione sygnały, co oznacza, że inwestorzy mogą przegapić początek nowego trendu.
+Potrzeba potwierdzenia: Wskazane jest potwierdzenie sygnałów SMA za pomocą dodatkowych analiz i wskaźników.<br>
+            <br>
+W tej aplikacji "Max Profit Seeker", stawiamy sobie za cel pomóc inwestorom w optymalnym doborze okresów SMA, aby maksymalizować zyski na giełdzie.<br>
+            <br>
+        </p>
+    </section>
+
+    <section>
+        <h2>Developers</h2>
+        <p>
+            This application is developed by Sebastian Piątkowski. If you have any questions or
+            feedback, feel free to contact me at [sebastianpiatkowski32@gmail.com].
+        </p>
+    </section>
+
+<section>
+    <h2>Technologies Used:</h2>
+    <ul>
+        <li>Python</li>
+        <li>Flask</li>
+        <li>Plotly Express</li>
+        <li>Pandas</li>
+        <li>Bootstrap</li>
+
+        <!-- Dodaj inne używane biblioteki i technologie -->
+    </ul>
+</section>
+
+    <footer>
+        <p>&copy; 2024 Profit Pilot, Max Profit Seeker,  SMA Profit Evaluator. All rights reserved.</p>
+    </footer>
 {% endblock %}}

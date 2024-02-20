@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %} Load Data {% endblock %}
+
+{% block content %}
+<form action="/load_data" method="post" enctype="multipart/form-data">
+    <label for="ticker">Symbol tickerowy:</label><br>
+    <input type="text" id="ticker" name="ticker"><br>
+    <label for="start_date">Data początkowa:</label><br>
+    <input type="date" id="start_date" name="start_date"><br>
+    <label for="end_date">Data końcowa:</label><br>
+    <input type="date" id="end_date" name="end_date"><br>
+    <label for="csv">Lub wybierz plik CSV:</label><br>
+    <input type="file" id="csv" name="csv"><br>
+    <input type="submit" value="Wyślij">
+</form>
+{% endblock %}}

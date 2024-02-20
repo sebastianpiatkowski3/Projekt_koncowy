@@ -1,8 +1,85 @@
 {% extends "base.html" %}
 
-{% block title %} Currencies {% endblock %}
+{% block title %} Home {% endblock %}
 
 {% block content %}
+<br>
+<h2>Formularz do pobierania danych OHLCV</h2><br>
+<form action="/index" method="post" enctype="multipart/form-data">
+<div class="card">
+<div class="card-body">
+    <h3>Wprowadź dane:</h3><br>
+    <label style="width: calc(20% - 10px)"  for="ticker">Symbol tickerowy:</label>
+    <label style="width: calc(20% - 10px)" for="start_date">Data początkowa:</label>
+    <label style="width: calc(20% - 10px)" for="end_date">Data końcowa:</label>
+    <label style="width: calc(20% - 10px)" for="timeframe">Interwał czasowy:</label>
+    <br>
+<!--    <input style="width: calc(20% - 10px)" type="text" id="ticker" name="ticker">-->
+    <select style="width: calc(20% - 10px)" type="text" id="ticker" name="ticker">
+            <option value="^NDX">NASDAQ 100</option>
+            <option value="^GDAXI">DAX</option>
+            <option value="EURUSD=X">EUR-USD</option>
+            <option value="EURGBP=X">EUR-GBP</option>
+            <option value="GBPUSD=X">USD-GBP</option>
+            <option value="USDJPY=X">USD-JPY</option>
+            <option value="BTC-USD">USD-BTC</option>
+            <option value="ETH-USD">USD-ETH</option>
+    </select>
+    <input style="width: calc(20% - 10px)" type="date" id="start_date" name="start_date">
+    <input style="width: calc(20% - 10px)" type="date" id="end_date" name="end_date">
+    <select style="width: calc(20% - 10px)" type="text" id="timeframe" name="timeframe">
+            <option value="1m">1 minuta</option>
+            <option value="2m">2 minuty</option>
+            <option value="5m">5 minut</option>
+            <option value="15m">15 minut</option>
+            <option value="30m">30 minut</option>
+            <option value="60m">60 minut</option>
+            <option value="90m">90 minut</option>
+            <option value="1d">1 dzień</option>
+            <option value="5d">5 dni</option>
+            <option value="1wk">1 tydzień</option>
+            <option value="1mo">1 miesiąc</option>
+            <option value="3mo">3 miesiące</option>
+    </select><br>
+    <br>
+    <button style="width: calc(20% - 10px)" type="submit" name="submit_data" class="btn btn-primary">Zatwierdź</button>
+<br>
+</div>
+</div>
+<br>
+<div class="card">
+<div class="card-body">
+    <h3>Wybierz plik csv</h3><br>
+    <input style="width: calc(60% - 10px)" type="file" id="csv" name="csv" accept=".csv"><br>
+    <br>
+    <button style="width: calc(20% - 10px)" type="submit" name="submit_file" class="btn btn-primary">Zatwierdź</button>
+    <br>
+</div>
+</div>
+    <br>
+</form>
+
+    <script>
+        var date = new Date();
+        date.setDate(date.getDate() - 30);
+        var dateString = date.toISOString().split('T')[0];
+        document.getElementById('start_date').value = dateString;
+
+        var today = new Date();
+        var todayString = today.toISOString().split('T')[0];
+        document.getElementById('end_date').value = todayString;
+    </script>
+
+<br>
+<br>
+<br>
+<div class="container-fluid">
+<h3>{{ opis }}</h3>
+    <table class="table table-sm">
+        {{ data_html|safe }}
+    </table>
+
+
 <div class="container" mx-auto>
   <div class="row">
     <div class="col-2"></div>  <!-- Lewy margines 1/12 szerokości -->

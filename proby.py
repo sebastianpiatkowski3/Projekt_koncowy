@@ -203,15 +203,51 @@
 # # Wyświetl DataFrame po zapełnieniu NaN zerami
 # print(df)
 
-import pandas as pd
-import plotly.express as px
+# import pandas as pd
+# import plotly.express as px
+#
+# # Tworzenie DataFrame z danymi
+# data = {'Styczeń': [5, 3], 'Luty': [7, 1]}
+# df = pd.DataFrame(data, index=['Biały', 'Czerwony'])
+#
+# # Tworzenie mapy ciepła
+# fig = px.imshow(df, labels=dict(x="Miesiąc", y="Kolor", color="Wartość"), color_continuous_scale='blues')
+#
+# fig.show()
+# # ____________________________
+#
+# import yfinance as yf
+#
+# # Pobierz dane dla DAX40
+# data = yf.download('BTC-USD', start='2024-01-01', end='2024-01-31', interval='1h')
+#
+# # print data only for row 0 and olny for column 0
+# print(data.iloc[0, 5])
+# print(data.iloc[0])
+# # print olny names of columns
+# print(data.columns)
+#
+# # ____________________________
 
-# Tworzenie DataFrame z danymi
-data = {'Styczeń': [5, 3], 'Luty': [7, 1]}
-df = pd.DataFrame(data, index=['Biały', 'Czerwony'])
 
-# Tworzenie mapy ciepła
-fig = px.imshow(df, labels=dict(x="Miesiąc", y="Kolor", color="Wartość"), color_continuous_scale='blues')
+import yfinance as yf
 
-fig.show()
+def get_instrument_name(symbol):
+    try:
+        ticker = yf.Ticker(symbol)
+        info = ticker.info
+        instrument_name = info.get('longName', 'Nazwa nieznana')  # Domyślnie ustawia "Nazwa nieznana", jeśli nie ma dostępnej nazwy
+        return instrument_name
+    except Exception as e:
+        print(f"Błąd: {e}")
+        return None
+
+# Przykładowe użycie
+symbol = '^NDX'  # Możesz zastąpić tym interesującym cię symbolem
+instrument_name = get_instrument_name(symbol)
+
+if instrument_name:
+    print(f'Nazwa instrumentu dla {symbol}: {instrument_name}')
+else:
+    print(f'Nie udało się uzyskać nazwy instrumentu dla {symbol}.')
 # ____________________________
