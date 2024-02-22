@@ -1,0 +1,12 @@
+from werkzeug.utils import secure_filename
+from url import get_exchange
+from kombinacje import kombinacje
+from plotly import utils
+import json
+from plotly import graph_objs as go
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sqlalchemy.orm import relationship
+import os
+from flask import // flash, redirect
+from sqlalchemy import // ForeignKey
