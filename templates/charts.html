@@ -27,14 +27,15 @@
                     Okresy SMA Fast: {{ periods_1 }} <br>
                     Okresy SMA Slow: {{ periods_2 }} <br>
                     <br>
+                    ilość dni: {{ time_difference_days }} <br>
                     <br>
                     <h5>{{ opis }}</h5>
-                    <form method="POST" action="{{ url_for('charts') }}">
-                        <label for="instrument">Podaj nazwę instrumentu:</label>
-                        <input type="text" id="instrument" name="instrument" required>
-                        <br>
-                        <button type="submit" class="btn btn-primary">Zapisz dane</button>
-                    </form>
+<!--                    <form method="POST" action="{{ url_for('charts') }}">-->
+<!--                        <label for="instrument">Podaj nazwę instrumentu:</label>-->
+<!--                        <input type="text" id="instrument" name="instrument" required>-->
+<!--                        <br>-->
+<!--                        <button type="submit" class="btn btn-primary">Zapisz dane</button>-->
+<!--                    </form>-->
             </div>
         </div>
     </div>

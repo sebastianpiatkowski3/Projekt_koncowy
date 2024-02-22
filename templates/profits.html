@@ -1,10 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %} Profity {% endblock %}
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/jq-3.6.0/dt-1.11.5/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jq-3.6.0/dt-1.11.5/datatables.min.js"></script>
+
+{% block content %}
+<br>
+<br>
+<div>
+<table id="myTable" class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Source</th>
+      <th>Instrument</th>
+      <th>Daily Profit</th>
+      <th>SMA Slow</th>
+      <th>SMA Fast</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for profit in profits %}
+      <tr>
+        <td>{{ profit.file }}</td>
+        <td>{{ profit.instrument }}</td>
+        <td>{{ profit.daily_profit }}</td>
+        <td>{{ profit.sma_slow }}</td>
+        <td>{{ profit.sma_fast }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/jq-3.6.0/dt-1.11.5/datatables.min.js"></script>
+
+<script>
+  $(document).ready( function () {
+    $('#myTable').DataTable();
+  } );
+</script>
+{% endblock %}
