@@ -21,36 +21,7 @@ Session(app)
 # Inicjalizacja rozszerzenia pamięci podręcznej
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
-# file = 'GER40_2024.csv'  # Plik CSV z danymi
-# file = 'GER402.csv'  # Plik CSV z danymi
 data = None
-
-ticker_symbols = {
-    "NASDAQ 100": "^NDX",
-    "DAX": "^GDAXI",
-    "EUR-USD": "EURUSD=X",
-    "EUR-GBP": "EURGBP=X",
-    "USD-GBP": "GBPUSD=X",
-    "USD-JPY": "USDJPY=X",
-    "USD-BTC": "BTC-USD",
-    "USD-ETH": "ETH-USD"
-}
-
-timeframes = {
-    "1 minute": "1m",
-    "2 minutes": "2m",
-    "5 minutes": "5m",
-    "15 minutes": "15m",
-    "30 minutes": "30m",
-    "60 minutes": "60m",
-    "90 minutes": "90m",
-    "1 hour": "1h",
-    "1 day": "1d",
-    "5 days": "5d",
-    "1 week": "1wk",
-    "1 month": "1mo",
-    "3 months": "3mo"
-}
 
 class Profits(db.Model):
     id = db.Column(db.Integer, primary_key=True)

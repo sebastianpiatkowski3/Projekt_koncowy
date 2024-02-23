@@ -3,7 +3,11 @@
 {% block title %} Wykresy {% endblock %}
 
 {% block content %}
-
+<style>
+    .colored-column {
+        color: blue;
+    }
+</style>
 <br>
 <h3></h3>
     <div class="container-fluid">
@@ -12,24 +16,72 @@
                 <!-- Wykres Plotly Express -->
                 {{ heatmap|safe }}
             </div>
-            <div class="col-md-5">
-                <h5> </h5>
-                    Profit Max: {{ profit_max }} <br>
-                    Daily Profit Max: {{ daily_profit_max }} <br>
-                    SMA Fast: {{ sm1_max }} <br>
-                    SMA Slow: {{ sm2_max }} <br>
-                    <br>
-                    Profit Min: {{ profit_min }} <br>
-                    Daily Profit Min: {{ daily_profit_min }} <br>
-                    SMA Fast: {{ sm1_min }} <br>
-                    SMA Slow: {{ sm2_min }} <br>
-                    <br>
-                    Okresy SMA Fast: {{ periods_1 }} <br>
-                    Okresy SMA Slow: {{ periods_2 }} <br>
-                    <br>
-                    ilość dni: {{ time_difference_days }} <br>
-                    <br>
-                    <h5>{{ opis }}</h5>
+<div class="col-md-5">
+    <h5>{{ opis }}</h5><br>
+<table >
+    <tr>
+        <td class="colored-column">Profit Max:</td>
+        <td> {{ profit_max }}</td>
+    </tr>
+    <tr>
+        <td class="colored-column">Daily Profit Max:</td>
+        <td>{{ daily_profit_max }}</td>
+    </tr>
+    <tr>
+        <td class="colored-column"> SMA Fast: </td>
+        <td> {{ sm1_max }} </td>
+    </tr>
+    <tr>
+        <td class="colored-column"> SMA Slow: </td>
+        <td> {{ sm2_max }} </td>
+    </tr>
+    <tr>
+        <td><br>  </td>
+        <td>  </td>
+    <tr>
+        <td class="colored-column"> Profit Min: </td>
+        <td> {{ profit_min }} </td>
+    </tr>
+    <tr>
+        <td class="colored-column"> Daily Profit Min: </td>
+        <td> {{ daily_profit_min }} </td>
+    </tr>
+        <tr>
+        <td><br>  </td>
+        <td>  </td>
+    <tr>
+    <tr>
+        <td class="colored-column"> SMA Fast: </td>
+        <td> {{ sm1_min }} </td>
+    </tr>
+    <tr>
+        <td class="colored-column"> SMA Slow: </td>
+        <td> {{ sm2_min }} </td>
+    </tr>
+        <tr>
+        <td><br>  </td>
+        <td>  </td>
+    <tr>
+    <tr>
+        <td class="colored-column"> Okresy SMA Fast: </td>
+        <td> {{ periods_1 }} </td>
+    </tr>
+    <tr>
+        <td class="colored-column"> Okresy SMA Slow: </td>
+        <td> {{ periods_2 }} </td>
+    </tr>
+        <tr>
+        <td><br>  </td>
+        <td>  </td>
+    <tr>
+    <tr>
+        <td class="colored-column"> ilość dni: </td>
+        <td> {{ time_difference_days }} </td>
+    </tr>
+</table>
+<br>
+<br>
+
 <!--                    <form method="POST" action="{{ url_for('charts') }}">-->
 <!--                        <label for="instrument">Podaj nazwę instrumentu:</label>-->
 <!--                        <input type="text" id="instrument" name="instrument" required>-->

@@ -18,12 +18,12 @@
     <select style="width: calc(20% - 10px)" type="text" id="ticker" name="ticker">
             <option value="^NDX">NASDAQ 100</option>
             <option value="^GDAXI">DAX</option>
-            <option value="EURUSD=X">EUR-USD</option>
-            <option value="EURGBP=X">EUR-GBP</option>
-            <option value="GBPUSD=X">USD-GBP</option>
-            <option value="USDJPY=X">USD-JPY</option>
-            <option value="BTC-USD">USD-BTC</option>
-            <option value="ETH-USD">USD-ETH</option>
+<!--            <option value="EURUSD=X">EUR-USD</option>-->
+<!--            <option value="EURGBP=X">EUR-GBP</option>-->
+<!--            <option value="GBPUSD=X">USD-GBP</option>-->
+<!--            <option value="USDJPY=X">USD-JPY</option>-->
+<!--            <option value="BTC-USD">USD-BTC</option>-->
+<!--            <option value="ETH-USD">USD-ETH</option>-->
     </select>
     <input style="width: calc(20% - 10px)" type="date" id="start_date" name="start_date">
     <input style="width: calc(20% - 10px)" type="date" id="end_date" name="end_date">
@@ -73,7 +73,7 @@
 <br>
 <div class="container-fluid">
 <h3>{{ opis }}</h3>
-    <table class="table table-sm">
+    <table  class="table table-striped table-hover">
         {{ data_html|safe }}
     </table>
 
