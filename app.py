@@ -63,42 +63,57 @@ def save_data(file, instrument, sma_slow, sma_fast, daily_profit, total_profit, 
         print(f"Błąd: {e}")
         return None
 
+
 def check_csv(df):
-    error_text = ''
+    error_text = []
+
     # Sprawdź liczbę kolumn
-    if len(df.columns) == 7:
-        # Sprawdź, czy pierwsza kolumna to data
-        if pd.api.types.is_datetime64_any_dtype(df.iloc[: , 0]):
-            # Sprawdź, czy druga kolumna to godzina
-            if pd.api.types.is_datetime64_any_dtype(df.iloc[: , 1]):
-                error_text += ("Plik CSV spełnia warunki.")
-            else:
-                error_text += ("Druga kolumna nie zawiera godziny.")
-        else:
-            error_text += ("Pierwsza kolumna nie zawiera daty.")
-    else:
-        error_text += ("Plik CSV nie zawiera 7 kolumn.")
+    if len(df.columns) != 7:
+        error_text.append("Plik CSV nie zawiera 7 kolumn.")
+
+    # Sprawdź, czy pierwsza kolumna to data
+    try:
+        pd.to_datetime(df.iloc[: , 0])
+    except Exception:
+        error_text.append("Pierwsza kolumna nie zawiera daty.")
+
+    # Sprawdź, czy druga kolumna to godzina
+    try:
+        pd.to_datetime(df.iloc[: , 1])
+    except Exception:
+        error_text.append("Druga kolumna nie zawiera godziny.")
 
     # Lista numerów kolumn do sprawdzenia (kolumny są indeksowane od 0)
     numery_kolumn = [2 , 3 , 4 , 5 , 6]
+
     # Sprawdź, czy kolumny zawierają liczby
     for numer_kolumny in numery_kolumn:
         kolumna = df.iloc[: , numer_kolumny]
         try:
             pd.to_numeric(kolumna , errors = 'raise')
         except ValueError:
-            error_text += (f"Kolumna {numer_kolumny + 1} nie zawiera liczb.")
-    print(error_text)
-    return False if error_text else True
+            error_text.append(f"Kolumna {numer_kolumny + 1} nie zawiera liczb.")
+
+    if error_text:
+        print('\n'.join(error_text))
+        return False
+    else:
+        print("Plik CSV spełnia warunki.")
+        return True
+
+
 
 def read_data(file):
+    # check_csv_result = False
     try:
         # Lista z nazwami kolumn
         nazwy_kolumn = ['Date', 'time', 'Open', 'High', 'Low', 'Close', 'Volume']
         # Wczytaj dane z pliku CSV
         df = pd.read_csv(file , sep = ',' , header = None, names=nazwy_kolumn)
+        print(f'print przed check_csv_result 109: {df}')
         check_csv_result = check_csv(df)
-        print(f'check_csv_result 100: {check_csv_result}')
+        print(f'Jestem po 110: check_csv_result {df}')
+        print(f'check_csv_result 108 dla pliku {file}: {check_csv_result}')
         if check_csv_result:
            df['Datetime'] = pd.to_datetime(df['Date'] + ' ' + df['time']) # Połącz kolumny 'Date' i 'time' w jedną kolumnę 'Datetime'
            df = df.drop(columns = 'Date')  # Usuń kolumnę 'Date'
@@ -106,8 +121,8 @@ def read_data(file):
            df = df[[df.columns[-1]] + list(df.columns[:-1])]  # Przenieś kolumnę 'Datetime' na pierwsze miejsce
            return df
         else:
-            print(check_csv_result)
-            return None
+           print("Zwracam None")
+           return None
     except ParserError as e:
         flash(f"Błąd konwersji danych: {e}. Sprawdź format danych i spróbuj ponownie." , 'error')
         return None
@@ -266,13 +281,13 @@ def index():
             data = read_data(csv_file)
             if data is not None:
                 # Pobierz 10 pierwszych wierszy danych
-                data_10 = data.head(10) if data is not None else ''
+                data_10 = data.head(10)
                 outcome_count_crossings = count_crossings(data , 'CSV' , filename)
                 session['data'] = data  # Zapisz dane w sesji
                 session['outcome'] = outcome_count_crossings
                 session['opis'] = f'Dane z pliku: {filename}'
             else:
-                session['opis'] = 'Błąd wczytywania danych z pliku CSV.'
+                session['opis'] = f'Błąd wczytywania danych z pliku {filename}.'
                 return redirect(url_for('index'))
 
     # Sprawdź, czy 'opis' istnieje w sesji przed użyciem
