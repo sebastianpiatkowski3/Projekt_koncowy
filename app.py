@@ -1,6 +1,6 @@
 from typing import Any
 
-from flask import Flask, render_template, request, g, session
+from flask import Flask , render_template , request , g , session , flash
 from pandas import DataFrame
 
 from flask_session import Session
@@ -12,6 +12,7 @@ from pandas.errors import ParserError
 from sqlalchemy import func
 from flask_sqlalchemy import SQLAlchemy
 from flask_caching import Cache
+from flask import redirect, url_for
 
 app = Flask(__name__)
 
@@ -87,7 +88,8 @@ def check_csv(df):
             pd.to_numeric(kolumna , errors = 'raise')
         except ValueError:
             error_text += (f"Kolumna {numer_kolumny + 1} nie zawiera liczb.")
-    return error_text
+    print(error_text)
+    return False if error_text else True
 
 def read_data(file):
     try:
@@ -95,17 +97,20 @@ def read_data(file):
         nazwy_kolumn = ['Date', 'time', 'Open', 'High', 'Low', 'Close', 'Volume']
         # Wczytaj dane z pliku CSV
         df = pd.read_csv(file , sep = ',' , header = None, names=nazwy_kolumn)
-        error_text = check_csv(df)
-        if error_text:
-            pass # TODO
-        df['Datetime'] = pd.to_datetime(df['Date'] + ' ' + df['time']) # Połącz kolumny 'Date' i 'time' w jedną kolumnę 'Datetime'
-        df = df.drop(columns = 'Date')  # Usuń kolumnę 'Date'
-        df = df.drop(columns = 'time')  # Usuń kolumnę 'time'
-        df = df[[df.columns[-1]] + list(df.columns[:-1])]  # Przenieś kolumnę 'Datetime' na pierwsze miejsce
-        return df
+        check_csv_result = check_csv(df)
+        print(f'check_csv_result 100: {check_csv_result}')
+        if check_csv_result:
+           df['Datetime'] = pd.to_datetime(df['Date'] + ' ' + df['time']) # Połącz kolumny 'Date' i 'time' w jedną kolumnę 'Datetime'
+           df = df.drop(columns = 'Date')  # Usuń kolumnę 'Date'
+           df = df.drop(columns = 'time')  # Usuń kolumnę 'time'
+           df = df[[df.columns[-1]] + list(df.columns[:-1])]  # Przenieś kolumnę 'Datetime' na pierwsze miejsce
+           return df
+        else:
+            print(check_csv_result)
+            return None
     except ParserError as e:
-       g.flash_message = f"Błąd konwersji danych: {e}. Sprawdź format danych i spróbuj ponownie."
-       return None
+        flash(f"Błąd konwersji danych: {e}. Sprawdź format danych i spróbuj ponownie." , 'error')
+        return None
 
 
 def get_instrument_name(symbol):
@@ -258,28 +263,25 @@ def index():
             csv_file = request.files['csv']
             session['filename'] = csv_file.filename
             filename = session.get('filename' , '')
-            data: DataFrame | None | Any = read_data(csv_file)
-            print(f'=*' * 50)
-            print(f'data 265: {data}')
-            print(f'=*' * 50)
-            print(f'=*' * 50)
-            # Pobierz 10 pierwszych wierszy danych
-            data_10 = data.head(10) if data is not None else ''
-            outcome_count_crossings = count_crossings(data , 'CSV' , filename)
-            print(f'=*'*50)
-            print(f'data 272: {data}')
-            print(f'=*' * 50)
-            print(f'=*' * 50)
-            session['data'] = data  # Zapisz dane w sesji
-            session['outcome'] = outcome_count_crossings
-            session['opis'] = f'Dane z pliku: {filename}'
+            data = read_data(csv_file)
+            if data is not None:
+                # Pobierz 10 pierwszych wierszy danych
+                data_10 = data.head(10) if data is not None else ''
+                outcome_count_crossings = count_crossings(data , 'CSV' , filename)
+                session['data'] = data  # Zapisz dane w sesji
+                session['outcome'] = outcome_count_crossings
+                session['opis'] = f'Dane z pliku: {filename}'
+            else:
+                session['opis'] = 'Błąd wczytywania danych z pliku CSV.'
+                return redirect(url_for('index'))
 
     # Sprawdź, czy 'opis' istnieje w sesji przed użyciem
     session['opis'] = session.get('opis' , '')
 
-    if session['data'] is not None:
+    if 'data' in session and session['data'] is not None:
         data_10 = session['data'].head(10)
-    else: data_10 = data.head(10) if data is not None else ''
+    else:
+        data_10 = pd.DataFrame()
     if not data_10.empty:
         data_html = data_10.to_html(classes = 'table table-bordered')
     else:
