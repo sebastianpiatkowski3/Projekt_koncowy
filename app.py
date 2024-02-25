@@ -1,4 +1,8 @@
+from typing import Any
+
 from flask import Flask, render_template, request, g, session
+from pandas import DataFrame
+
 from flask_session import Session
 import plotly.express as px
 import pandas as pd
@@ -58,14 +62,46 @@ def save_data(file, instrument, sma_slow, sma_fast, daily_profit, total_profit, 
         print(f"Błąd: {e}")
         return None
 
+def check_csv(df):
+    error_text = ''
+    # Sprawdź liczbę kolumn
+    if len(df.columns) == 7:
+        # Sprawdź, czy pierwsza kolumna to data
+        if pd.api.types.is_datetime64_any_dtype(df.iloc[: , 0]):
+            # Sprawdź, czy druga kolumna to godzina
+            if pd.api.types.is_datetime64_any_dtype(df.iloc[: , 1]):
+                error_text += ("Plik CSV spełnia warunki.")
+            else:
+                error_text += ("Druga kolumna nie zawiera godziny.")
+        else:
+            error_text += ("Pierwsza kolumna nie zawiera daty.")
+    else:
+        error_text += ("Plik CSV nie zawiera 7 kolumn.")
+
+    # Lista numerów kolumn do sprawdzenia (kolumny są indeksowane od 0)
+    numery_kolumn = [2 , 3 , 4 , 5 , 6]
+    # Sprawdź, czy kolumny zawierają liczby
+    for numer_kolumny in numery_kolumn:
+        kolumna = df.iloc[: , numer_kolumny]
+        try:
+            pd.to_numeric(kolumna , errors = 'raise')
+        except ValueError:
+            error_text += (f"Kolumna {numer_kolumny + 1} nie zawiera liczb.")
+    return error_text
+
 def read_data(file):
     try:
         # Lista z nazwami kolumn
         nazwy_kolumn = ['Date', 'time', 'Open', 'High', 'Low', 'Close', 'Volume']
         # Wczytaj dane z pliku CSV
         df = pd.read_csv(file , sep = ',' , header = None, names=nazwy_kolumn)
-        print(df)
+        error_text = check_csv(df)
+        if error_text:
+            pass # TODO
         df['Datetime'] = pd.to_datetime(df['Date'] + ' ' + df['time']) # Połącz kolumny 'Date' i 'time' w jedną kolumnę 'Datetime'
+        df = df.drop(columns = 'Date')  # Usuń kolumnę 'Date'
+        df = df.drop(columns = 'time')  # Usuń kolumnę 'time'
+        df = df[[df.columns[-1]] + list(df.columns[:-1])]  # Przenieś kolumnę 'Datetime' na pierwsze miejsce
         return df
     except ParserError as e:
        g.flash_message = f"Błąd konwersji danych: {e}. Sprawdź format danych i spróbuj ponownie."
@@ -106,9 +142,7 @@ periods_1 = [5, 10 , 20 , 30, 45 , 70 , 100]
 periods_2 = [20, 30, 50 , 100, 150, 200, 250, 300]
 
 def count_crossings(df, source='', instrument_name=''):
-    print('=' * 100)
-    print(df)
-    print('=' * 100)
+    df_copy = df.copy()
     results = []
     profit_max = float('-inf')
     profit_min = float('inf')
@@ -122,20 +156,20 @@ def count_crossings(df, source='', instrument_name=''):
     for period1 in periods_1:
         for period2 in periods_2:
             if period1 < period2:
-                sma_fast = calculate_sma(df, period1)
-                df['sma_fast'] = sma_fast
-                sma_slow = calculate_sma(df, period2)
-                df['sma_slow'] = sma_slow
+                sma_fast = calculate_sma(df_copy, period1)
+                df_copy['sma_fast'] = sma_fast
+                sma_slow = calculate_sma(df_copy, period2)
+                df_copy['sma_slow'] = sma_slow
 
-                crossings_upward, crossings_downward = find_crossings(df, sma_fast, sma_slow)
+                crossings_upward, crossings_downward = find_crossings(df_copy, sma_fast, sma_slow)
 
-                df['crossings_upward'] = crossings_upward
-                df['crossings_downward'] = crossings_downward
+                df_copy['crossings_upward'] = crossings_upward
+                df_copy['crossings_downward'] = crossings_downward
 
-                df['crossings'] = df['crossings_upward'] | df['crossings_downward']
-                df.fillna({'crossings': False}, inplace=True)
+                df_copy['crossings'] = df_copy['crossings_upward'] | df_copy['crossings_downward']
+                df_copy.fillna({'crossings': False}, inplace=True)
 
-                momenty = df[df['crossings']]
+                momenty = df_copy[df_copy['crossings']]
 
                 momenty.loc[:, 'close_diff'] = momenty['Close'].diff()
                 momenty.loc[:, 'close_diff'] = momenty['close_diff'].fillna(0)
@@ -144,7 +178,12 @@ def count_crossings(df, source='', instrument_name=''):
 
                 diffs = momenty['close_diff']
 
-                time_difference = df.iloc[-1]['Datetime'] - df.iloc[0]['Datetime']
+                if len(df_copy) >= 2:
+                    time_difference = df_copy.iloc[-1]['Datetime'] - df_copy.iloc[0]['Datetime']
+                    # Kontynuuj z obliczeniami
+                else:
+                    # Obsłuż sytuację, gdy DataFrame ma mniej niż dwa wiersze
+                    print("DataFrame ma zbyt mało wierszy.")
                 # count difference between date in hours
                 time_difference = time_difference.total_seconds() / 3600  # Convert to hours
                 time_difference_days = round(time_difference / 24, 0) # Convert to days
@@ -159,13 +198,13 @@ def count_crossings(df, source='', instrument_name=''):
                     daily_profit_max = daily_profit
                     sma_fast_max = period1
                     sma_slow_max = period2
-                    df_max = df.copy()
+                    df_max = df_copy.copy()
                 if total_profit < profit_min:
                     profit_min = total_profit
                     daily_profit_min = daily_profit
                     sma_fast_min = period1
                     sma_slow_min = period2
-                    df_min = df.copy()
+                    df_min = df_copy.copy()
     # save data to database
     save_data(source, instrument_name, sma_slow_max, sma_fast_max, daily_profit_max, profit_max, len(diffs), df_max.iloc[0]['Datetime'], df_max.iloc[-1]['Datetime'])
     return (results,
@@ -183,8 +222,8 @@ def count_crossings(df, source='', instrument_name=''):
 
 opis = ''
 
-@app.route('/index', methods=['GET', 'POST'])
-# @cache.cached(timeout=180)  # Cache na 60 sekund
+
+@app.route('/index' , methods = ['GET' , 'POST'])
 def index():
     # Inicjalizacja sesji
     session.setdefault('data' , None)
@@ -196,7 +235,7 @@ def index():
     if request.form:
         # Sprawdź, który przycisk został naciśnięty
         if 'submit_data' in request.form:
-            session.clear()  # Po wczytaniu nowych danych wyczyść sesję
+            session.clear()  # Przed wczytaniem nowych danych wyczyść sesję
             # Pobierz dane z formularza
             start_date = request.form.get('start_date')
             end_date = request.form.get('end_date')
@@ -205,37 +244,52 @@ def index():
             # Pobierz dane z yfinance
             data = yf.download(instrument , start = start_date , end = end_date , interval = timeframe)
             data.reset_index(inplace = True)  # remove index 'Datetime'
+            data = data.drop(columns = 'Adj Close')  # Usuń kolumnę 'Adj Close'
+            # Pobierz 10 pierwszych wierszy danych
+            data_10 = data.head(10) if data is not None else ''
             session['data'] = data  # Zapisz dane w sesji
             nazwa_instrumentu = get_instrument_name(instrument)
             session['opis'] = f'Dane dla {nazwa_instrumentu} w okresie od {start_date} do {end_date} z interwałem {timeframe}.'
-            outcome = count_crossings(data, 'API', nazwa_instrumentu)
-            session['results_df'] = pd.DataFrame(outcome[0])
-            session['outcome'] = outcome
-        elif 'submit_file' in request.form:
-            session.clear()  # Po wczytaniu nowych danych wyczyść sesję
+            outcome_count_crossings = count_crossings(data , 'API' , nazwa_instrumentu)
+            session['results_df'] = pd.DataFrame(outcome_count_crossings[0])
+            session['outcome'] = outcome_count_crossings
+        if 'submit_file' in request.form:
+            session.clear()  # Przed wczytaniem nowych danych wyczyść sesję
             csv_file = request.files['csv']
             session['filename'] = csv_file.filename
             filename = session.get('filename' , '')
-            data = read_data(csv_file)
+            data: DataFrame | None | Any = read_data(csv_file)
+            print(f'=*' * 50)
+            print(f'data 265: {data}')
+            print(f'=*' * 50)
+            print(f'=*' * 50)
+            # Pobierz 10 pierwszych wierszy danych
+            data_10 = data.head(10) if data is not None else ''
+            outcome_count_crossings = count_crossings(data , 'CSV' , filename)
+            print(f'=*'*50)
+            print(f'data 272: {data}')
+            print(f'=*' * 50)
+            print(f'=*' * 50)
             session['data'] = data  # Zapisz dane w sesji
-            outcome = count_crossings(data, 'CSV', filename)
-            session['outcome'] = outcome
+            session['outcome'] = outcome_count_crossings
             session['opis'] = f'Dane z pliku: {filename}'
+
     # Sprawdź, czy 'opis' istnieje w sesji przed użyciem
-    session['opis'] = session.get('opis', '')
-    # Sprawdź, czy data jest różne od None, zanim użyjesz to_html
-    # get 10 first rows of data
-    data_10 = session['data'].head(10) if session['data'] is not None else ''
-    if isinstance(data_10 , pd.DataFrame):
+    session['opis'] = session.get('opis' , '')
+
+    if session['data'] is not None:
+        data_10 = session['data'].head(10)
+    else: data_10 = data.head(10) if data is not None else ''
+    if not data_10.empty:
         data_html = data_10.to_html(classes = 'table table-bordered')
     else:
         data_html = ''
-    return render_template('index.html',
-                           data_html=data_html,
-                           data = session['data'],
-                           outcome = session['outcome'],
-                           opis = session['opis'],
-                           filename = session.get('filename', ''))
+
+    return render_template('index.html' ,
+                           data_html = data_html ,
+                           outcome = session['outcome'] ,
+                           opis = session['opis'] ,
+                           filename = session.get('filename' , ''))
 
 
 @app.route('/charts')
