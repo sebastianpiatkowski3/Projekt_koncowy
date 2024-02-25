@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #sidebar {
+      height: 100vh;
+      width: 100px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #333;
+      padding: 20px;
+      box-sizing: border-box;
+      color: #fff;
+    }
+    #content {
+      margin-left: 220px; /* Szerokość paska nawigacyjnego plus odstęp */
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    button {
+      display: block;
+      margin-bottom: 10px;
+      background-color: #555;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+  </style>
+  <script>
+    function przewinDoWidoku(elementId) {
+      var widokElement = document.getElementById(elementId);
+      widokElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</head>
+<body>
+  <div id="sidebar">
+    <!-- Pasek nawigacyjny z przyciskami -->
+    <button onclick="przewinDoWidoku('sekcja1')">Sekcja 1</button>
+    <button onclick="przewinDoWidoku('sekcja2')">Sekcja 2</button>
+    <!-- Dodaj więcej przycisków według potrzeb -->
+  </div>
+
+  <div id="content">
+    <!-- Sekcje do przewinięcia -->
+    <section id="sekcja1">
+      <h2>Sekcja 1</h2>
+      <!-- Zawartość sekcji 1 -->
+       </section>
+
+    <section id="sekcja2">
+      <h2>Sekcja 2</h2>
+      <!-- Zawartość sekcji 2 -->
+       <br>
+    <br>
+    <br>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    </section>
+    <!-- Dodaj więcej sekcji według potrzeb -->
+  </div>
+
+  <!-- Bootstrap JavaScript i jQuery (potrzebne dla niektórych funkcji Bootstrapa) -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

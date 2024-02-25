@@ -1,14 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %} Home {% endblock %}
+{% block title %} Dane {% endblock %}
 
 {% block content %}
+
+<!-- Formularz -->
 <br>
 <h2>Formularz do pobierania danych OHLCV</h2><br>
 <form action="/index" method="post" enctype="multipart/form-data">
 <div class="card">
 <div class="card-body">
-    <h3>Wprowadź dane:</h3><br>
+    <h3>Wprowadź parametry pobierania z yfinance:</h3><br>
     <label style="width: calc(20% - 10px)"  for="ticker">Symbol tickerowy:</label>
     <label style="width: calc(20% - 10px)" for="start_date">Data początkowa:</label>
     <label style="width: calc(20% - 10px)" for="end_date">Data końcowa:</label>
@@ -46,7 +48,8 @@
 <br>
 </div>
 </div>
-<br>
+
+    <br>
 <div class="card">
 <div class="card-body">
     <h3>Wybierz plik csv</h3><br>
@@ -54,6 +57,7 @@
     <br>
     <button style="width: calc(20% - 10px)" type="submit" name="submit_file" class="btn btn-primary">Zatwierdź</button>
     <br>
+    {{ message }}
 </div>
 </div>
     <br>
@@ -71,27 +75,14 @@
     </script>
 
 <br>
-<div class="container-fluid">
-<h3>{{ opis }}</h3>
-    <table  class="table table-striped table-hover">
-        {{ data_html|safe }}
-    </table>
+<!-- Tabela -->
+<br>
 
-
-<div class="container" mx-auto>
-  <div class="row">
-    <div class="col-2"></div>  <!-- Lewy margines 1/12 szerokości -->
-    <div class="col-1"></div>  <!-- Pierwsza kolumna 1/12 szerokości -->
-    <div class="col-1"></div>  <!-- Trzecia kolumna 5/12 szerokości -->
-    <div class="col-2"></div>  <!-- Prawy margines 1/12 szerokości -->
-  </div>
-        {% for element in dane %}
-  <div class="row" mx-auto>
-    <div class="col-2"></div>
-    <div class="col-1">{{ loop.index }}</div>
-    <div class="col-5">{{ element }}</div>
-    <div class="col-2"></div>
-  </div>
-        {% endfor %}
+<div class="container-fluid" id="tabela">
+  <h3>{{ opis }}</h3>
+  <table class="table table-striped table-hover">
+    {{ data_html|safe }}
+  </table>
 </div>
+
 {% endblock %}

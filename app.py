@@ -1,8 +1,4 @@
-from typing import Any
-
 from flask import Flask , render_template , request , g , session , flash
-from pandas import DataFrame
-
 from flask_session import Session
 import plotly.express as px
 import pandas as pd
@@ -40,6 +36,9 @@ class Profits(db.Model):
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
     date_time = db.Column(db.DateTime, server_default=func.now())
+    # Ustawienie unikalności dla kombinacji instrument, start_date, end_date
+    # __table_args__ = (db.UniqueConstraint('file', 'instrument' , 'daily_profit', 'total_profit', 'sma_fast', 'sma_slow', 'start_date' , 'end_date') ,)
+    __table_args__ = (db.UniqueConstraint('file' , 'instrument' , 'start_date' , 'end_date') ,)
 
 with app.app_context():
     db.create_all()

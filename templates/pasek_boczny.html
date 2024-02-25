@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scroll Menu</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.scroll-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+}
+
+.scroll-menu button {
+  background-color: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  margin-right: 10px;
+}
+</style>
+</head>
+<body>
+<div class="scroll-menu">
+  <button onclick="scrollToSection('section1')">Sekcja 1</button>
+  <button onclick="scrollToSection('section2')">Sekcja 2</button>
+  <!-- Dodaj więcej przycisków według potrzeb -->
+</div>
+
+<section id="section1" style="height: 500px; background-color: lightblue;">
+  <h2>Sekcja 1</h2>
+</section>
+
+<section id="section2" style="height: 500px; background-color: lightcoral;">
+  <h2>Sekcja 2</h2>
+</section>
+
+<!-- Dodaj więcej sekcji według potrzeb -->
+
+<script>
+function scrollToSection(sectionId) {
+  var section = document.getElementById(sectionId);
+  section.scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
