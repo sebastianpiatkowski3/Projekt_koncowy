@@ -1,3 +1,7 @@
+"""
+Web application for analyzing financial data and visualizing moving average strategies.
+"""
+
 from flask import Flask, render_template, request, g, session, flash
 from flask_session import Session
 import plotly.express as px
@@ -28,6 +32,10 @@ data = None
 
 
 class Profits(db.Model):
+    """
+    Database model for storing profit-related information.
+    """
+
     id = db.Column(db.Integer, primary_key=True)
     file = db.Column(db.String)
     instrument = db.Column(db.String)
@@ -62,6 +70,23 @@ def save_data(
     start_date,
     end_date,
 ):
+    """
+    Save profit-related data to the database.
+
+    Args:
+    file (str): Name of the file.
+    instrument (str): Instrument name.
+    sma_slow (int): Slow Simple Moving Average period.
+    sma_fast (int): Fast Simple Moving Average period.
+    daily_profit (float): Daily profit value.
+    total_profit (float): Total profit value.
+    crossover_sum (int): Number of crossovers.
+    start_date (datetime): Start date of the data.
+    end_date (datetime): End date of the data.
+
+    Returns:
+    int: ID of the saved record, or None if an error occurs.
+    """
     try:
         new_profit = Profits(
             file=file,
@@ -83,6 +108,15 @@ def save_data(
 
 
 def check_csv(df):
+    """
+    Check if the input CSV DataFrame meets certain criteria.
+
+    Args:
+    df (pd.DataFrame): Input DataFrame containing financial data.
+
+    Returns:
+    bool: True if the data meets the criteria, False otherwise.
+    """
     error_text = []
 
     # Sprawdź liczbę kolumn
@@ -121,7 +155,15 @@ def check_csv(df):
 
 
 def read_data(file):
-    # check_csv_result = False
+    """
+    Read financial data from a CSV file and perform data validation.
+
+    Args:
+    file (FileStorage): File object containing financial data in CSV format.
+
+    Returns:
+    pd.DataFrame or None: Processed DataFrame if successful, None if an error occurs.
+    """
     try:
         # Lista z nazwami kolumn
         nazwy_kolumn = ["Date", "time", "Open", "High", "Low", "Close", "Volume"]
@@ -324,6 +366,18 @@ def index():
             instrument = request.form.get("ticker")
             timeframe = request.form.get("timeframe")
             # Pobierz dane z yfinance
+            """
+                Download financial data using the yfinance library.
+
+                Args:
+                instrument (str): Symbol representing the financial instrument.
+                start_date (str): Start date for data retrieval (YYYY-MM-DD format).
+                end_date (str): End date for data retrieval (YYYY-MM-DD format).
+                interval (str): Time interval for data (e.g., "1d" for daily).
+
+                Returns:
+                pd.DataFrame or None: DataFrame containing financial data if successful, None if an error occurs.
+                """
             data = yf.download(
                 instrument, start=start_date, end=end_date, interval=timeframe
             )
@@ -380,6 +434,13 @@ def index():
 @app.route("/charts")
 # @cache.cached(timeout=180)  # Cache na 60 sekund
 def charts():
+    """
+    Handle requests to the charts page for visualizing profits from
+    combinations of various periods of simple moving averages and their crossovers.
+
+    Returns:
+    render_template: Rendered HTML template with charts and analysis results.
+    """
     outcome = session["outcome"]
     if outcome is not None:
         results_df = pd.DataFrame(outcome[0])
@@ -554,6 +615,12 @@ def charts():
 
 @app.route("/profits")
 def profits():
+    """
+    Retrieve and display profit-related information stored in the database.
+
+    Returns:
+    render_template: Rendered HTML template displaying profit-related information.
+    """
     get_profits = Profits.query.order_by(Profits.daily_profit.desc()).all()
     return render_template("profits.html", profits=get_profits)
 
